@@ -40,7 +40,6 @@ public class RSA_encr_decr {
 
         System.out.println("Enter the message for encryption");
         msg = in.nextLine(); 
-        // in.close();
 
         mlen = msg.length();
         for (int i = 0; i < mlen; i++) {
