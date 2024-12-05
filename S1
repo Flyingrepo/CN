@@ -1,0 +1,53 @@
+set ns [newSimulator]
+set tracefile [opens1.trw]
+$ns trace-all $tracefile
+set namfile [opens1.nam w]
+$ns namtrace-all $namfile
+proc finish {}{
+global ns tracefilenamfile
+$ns flush-trace
+close $tracefile
+close $namfile
+exec nams1.nam &
+exec awk-fs1.awks1.tr& 
+exit 0
+}
+set n0 [$nsnode]
+set n1 [$nsnode]
+set n2 [$nsnode]
+$n0 label"TCPSource"
+$n2 label"TCPSink"
+$ns color1red
+
+$ns duplex-link $n0 $n1 1Mb 10ms DropTail
+$ns duplex-link $n1 $n2 1Mb 10ms DropTail
+$ns queue-limit $n1 $n2 5
+set tcp [newAgent/TCP]
+$ns attach-agent $n0 $tcp
+set tcpsink [new Agent/TCPSink]
+$ns attach-agent $n2 $tcpsink
+set ftp [new Application/FTP]
+$ftp attach-agent $tcp
+$ns connect $tcp $tcpsink
+$tcp set class_1
+$ns at 0.2 "$ftpstart"
+$ns at 2.5 "$ftpstop"
+$ns at 3.0 "finish"
+$ns run
+
+#gedit s1.tcl
+#sudonss1.tcl
+#gedit s1graph
+# xgraph-x"Bandwidth(Mbps)"-y"Noofpacketsdropped"-t"Performance analysis"s1graph
+
+#s1.awk
+BEGIN{
+count=0;
+}
+{
+event=$1;
+if(event== "d"){count++;}
+}
+END{
+printf("\nNumberofpacketsdropped is:%d\n",count);
+}
